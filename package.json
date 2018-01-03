@@ -6,10 +6,15 @@
   "license": "No License",
   "private": true,
   "peerDependencies": {
-    "react": "^15.5.4"
+    "react": "^16.2.0"
   },
   "dependencies": {
-    "react": "^15.5.4",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "konva": "^1.7.6",
+    "react": "16.2.0",
+    "react-dom": "16.2.0",
+    "react-konva": "^1.6.4",
     "webpack": "^2.6.1"
   },
   "scripts": {
@@ -18,11 +23,14 @@
     "build": "webpack"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
-    "babel-preset-env": "^1.5.1"
+    "babel-preset-env": "^1.5.1",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-react-app": "^3.1.0",
+    "flow-bin": "^0.62.0"
   }
 }

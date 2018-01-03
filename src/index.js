@@ -1,3 +1,4 @@
 import React from "react"
+import Canvas from "./components/Canvas"
 
-export default () => <p>helloTESTsssss</p>
+export default Canvas

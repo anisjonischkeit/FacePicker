@@ -1,4 +1,6 @@
 var path = require('path');
+var webpack = require('webpack');
+
 module.exports = {
     entry: './src/index.js',
     output: {
@@ -13,15 +15,17 @@ module.exports = {
                 include: path.resolve(__dirname, 'src'),
                 exclude: /(node_modules|bower_components|build)/,
                 use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['env']
-                    }
+                    loader: 'babel-loader'
                 }
             }
         ]
     },
     externals: {
         'react': 'commonjs react' // this line is just to use the React dependency of our parent-testing-project instead of using our own React.
-    }
+    },
+    // plugins: [
+    //     // for react-konva
+    //     new webpack.IgnorePlugin(/canvas$/),
+    //     new webpack.IgnorePlugin(/jsdom$/)
+    // ]
 };
