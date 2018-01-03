@@ -41,7 +41,7 @@ class Canvas extends Component<PropsType, StateType> {
       let faces = [...state.faces]
       faces[faceId] = {
         ...faces[faceId],
-        ...face
+        eyes: face
       }
       return { faces: faces }
     })

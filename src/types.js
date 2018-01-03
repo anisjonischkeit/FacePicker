@@ -6,8 +6,6 @@ export type EyeType = {
 }
 
 export type FaceType = {
-    eyes: {
-        left: EyeType,
-        right: EyeType
-    }
+    left: EyeType,
+    right: EyeType
 }
