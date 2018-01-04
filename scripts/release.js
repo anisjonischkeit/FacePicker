@@ -54,6 +54,7 @@ prompt.get(schema, function (err, result) {
     execSync(`git add package.json`)
     execSync(`git commit -m "Release -- Version ${package.version}"`)
     execSync(`git tag version-${package.version}`)
+    execSync(`git tag -f latest`)
     execSync(`git push`)
     execSync(`git push --tags`)
   })
