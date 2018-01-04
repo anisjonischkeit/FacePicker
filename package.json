@@ -14,7 +14,7 @@
         "start": "webpack --watch",
         "build": "webpack",
         "prepack": "yarn build",
-        "release": "node ./scripts/release.js"
+        "release": "yarn build && node ./scripts/release.js"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
