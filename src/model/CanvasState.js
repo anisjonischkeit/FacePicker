@@ -380,7 +380,7 @@ export default class CanvasState {
         const returnableFaces = myState.faces.map(face => ({
             eyes: face.eyes
         }))
-        myState.updateFaces(returnableFaces)
+        myState.updateFaces(returnableFaces, myState.selection)
     };
 
     didDoubleTap = function () {
