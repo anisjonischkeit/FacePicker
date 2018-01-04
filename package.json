@@ -11,13 +11,14 @@
   "dependencies": {
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-react": "^6.24.1",
+    "postinstall-build": "^5.0.1",
     "webpack": "^2.6.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack --watch",
     "build": "webpack",
-    "postinstall": "yarn install && yarn build"
+    "postinstall": "postinstall-build build"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
