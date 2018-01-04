@@ -11,9 +11,6 @@ var schema = {
             pattern: /^(patch|minor|major)$/,
             message: 'Release Type [patch | minor | major]',
             required: true
-        },
-        commitMessage: {
-            required: true
         }
     }
 };
@@ -54,6 +51,9 @@ prompt.get(schema, function (err, result) {
 
     fs.writeFileSync('package.json', JSON.stringify(package, null, 4), 'utf8');
     
+    execSync(`git add package.json"`)
+    execSync(`git commit -m "Release -- Version ${package.version}"`)
     execSync(`git tag version-${package.version}`)
+    execSync(`git push`)
     execSync(`git push --tags`)
   })
