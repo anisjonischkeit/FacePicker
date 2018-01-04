@@ -55,9 +55,10 @@ prompt.get(schema, function (err, result) {
     execSync(`git commit -m "Release -- Version ${package.version}"`)
     execSync(`git push`)
 
+    execSync(`git push --delete origin latest`)
+
     execSync(`git tag version-${package.version}`)
+    execSync(`git tag -f latest`)
     execSync(`git push --tags`)
 
-    execSync(`git tag -f latest`)
-    execSync(`git push -f --tags`)
   })
