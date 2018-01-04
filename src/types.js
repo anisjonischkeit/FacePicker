@@ -5,7 +5,11 @@ export type EyeType = {
     y: number
 }
 
-export type FaceType = {
+export type EyesType = {
     left: EyeType,
     right: EyeType
+}
+
+export type FaceType = {
+    eyes: EyesType
 }

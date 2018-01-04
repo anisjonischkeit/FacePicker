@@ -67,3 +67,36 @@ export const toDegrees = (angle) => {
 export const toRadians = (angle) => {
     return angle * (Math.PI / 180);
 }
+
+export const rotate = (center, rotatee, rads) => {
+    const rot = {}
+    const cosA = Math.cos(rads);
+    const sinA = Math.sin(rads);
+
+
+    rot.x = center.x + cosA * (rotatee.x - center.x) - sinA * (rotatee.y - center.y);
+    rot.y = center.y + sinA * (rotatee.x - center.x) + cosA * (rotatee.y - center.y);
+    return rot;
+}
+
+
+export const getEyes = (center, size, angle) => {
+    // console.log(centre, size, angle)
+
+    const eyes  = {
+        left: {},
+        right: {}
+    }
+    // set eye pos assuming angle of zero...
+    eyes.left.x = center.x - (size / 6.0);
+    eyes.right.x = center.x + (size / 6.0);
+    eyes.left.y = center.y - (size / 6.0);
+    eyes.right.y = center.y - (size / 6.0);
+
+    const rads = angle * Math.PI / 180.0;
+
+    eyes.left = rotate(center, eyes.left, rads);
+    eyes.right = rotate(center, eyes.right, rads);
+
+    return eyes;
+}

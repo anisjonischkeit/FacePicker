@@ -1,4 +1,4 @@
 import React from "react"
-import Canvas from "./components/Canvas"
+import Canvas from "./components/ImagusCanvas"
 
 export default Canvas
