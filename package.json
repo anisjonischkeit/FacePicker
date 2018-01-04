@@ -8,26 +8,27 @@
   "peerDependencies": {
     "react": "^16.2.0"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack --watch",
     "build": "webpack",
-    "prepack": "yarn build"
+    "prepack": "yarn build",
+    "release": "node ./scripts/release.js"
   },
   "devDependencies": {
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-env": "^1.5.1",
-    "babel-preset-flow": "^6.23.0",
     "babel-cli": "^6.26.0",
-    "webpack": "^2.6.1",
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-env": "^1.5.1",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-react": "^6.24.1",
     "babel-preset-react-app": "^3.1.0",
-    "flow-bin": "^0.62.0"
+    "flow-bin": "^0.62.0",
+    "prompt": "^1.0.0",
+    "webpack": "^2.6.1"
   }
 }
