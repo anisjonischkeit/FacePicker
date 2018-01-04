@@ -7,7 +7,7 @@ import type { FaceType } from "../types"
 type PropsType = {
     faces: Array<FaceType>
 }
-
+ 
 type StateType = {}
 
 class Canvas extends Component<PropsType, StateType> {
