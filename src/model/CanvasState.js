@@ -19,6 +19,8 @@ export default class CanvasState {
     constructor(canvas: HTMLCanvasElement, updateFaces: (faces) => void, bgImage: HTMLImageElement) {
         this.canvas = canvas
         this.bgImage = bgImage
+        this.bgImage.width = canvas.width
+        this.bgImage.height = canvas.height
         this.updateFaces = updateFaces
 
         this.width = canvas.width
@@ -328,7 +330,7 @@ export default class CanvasState {
                     break;
                 }
             }
-            if (myState.selection !== null) {
+            if (myState.selection != null) {
                 let face
                 face = myState.faces[myState.selection];
                 if (face.eyeContains(mouse.x, mouse.y) || (this.isTouchDevice && face.eyeContains(mouse.x, mouse.y, this.shiftedEyeHandleLength + this.shiftedEyeHandleRadius + this.eyeGrabRegionRadius, this.shiftedEyeHandleRadius)) || face.dragHandleContains(mouse.x, mouse.y, myState.rotateLine, myState.rotateRad)) {
@@ -364,6 +366,10 @@ export default class CanvasState {
         }
     };
 
+    getReturnableFaces = () => myState.faces.map(face => ({
+        eyes: face.eyes
+    }))
+
     // reset all dragging states since we nolonger have anything selected with the mouse
     mouseUp = function (e, isMouse) {
         if ((!isMouse && !myState.mouseMoved && !myState.justSelected) && myState.selection !== null) {
@@ -377,10 +383,7 @@ export default class CanvasState {
         myState.onSquare = false;
         myState.rotating = false;
 
-        const returnableFaces = myState.faces.map(face => ({
-            eyes: face.eyes
-        }))
-        myState.updateFaces(returnableFaces, myState.selection)
+        myState.updateFaces(this.getReturnableFaces(), myState.selection)
     };
 
     didDoubleTap = function () {
@@ -406,6 +409,7 @@ export default class CanvasState {
         var my = mouse.y;
         var faces = myState.faces
         var l = faces.length
+        let onFace = false
 
         // if there is a face in the location of the mouse then remove that face from our faces array and redraw
         for (var i = l - 1; i >= 0; i--) {
@@ -413,28 +417,32 @@ export default class CanvasState {
                 myState.faces.splice(i, 1);
                 myState.selection = null
                 myState.valid = false
-                return;
+                onFace = true
+                break;
             }
         }
-        // otherwise add a new face
-        myState.addFace({
-                eyes: {
-                    left: {
-                        x: mouse.x - 20,
-                        y: mouse.y - 20
+
+        if (!onFace) {
+            // otherwise add a new face
+            myState.addFace({
+                    eyes: {
+                        left: {
+                            x: mouse.x - 20,
+                            y: mouse.y - 20
+                        },
+                        right: {
+                            x: mouse.x + 20,
+                            y: mouse.y - 20
+                        }
                     },
-                    right: {
-                        x: mouse.x + 20,
-                        y: mouse.y - 20
-                    }
-                },
-                centre: {
-                    x: mouse.x,
-                    y: mouse.y
-                },
-                radius: 60
-            }
-        );
+                    centre: {
+                        x: mouse.x,
+                        y: mouse.y
+                    },
+                    radius: 60
+                }
+            );
+        }
     }
 
 
@@ -460,6 +468,11 @@ export default class CanvasState {
         this.ctx.clearRect(0, 0, this.width, this.height);
     }
 
+    setBgImg = (img) => {
+        myState.bgImage = img
+        myState.valid = false
+    }
+
     // While draw is called as often as the INTERVAL variable demands,
     // It only ever does something if the canvas gets invalidated by our code
     draw = function () {
@@ -472,7 +485,7 @@ export default class CanvasState {
 
             // load background image first so that everything else gets played ontop of it
             if (this.bgImage) {
-                this.ctx.drawImage(this.bgImage, 0, 0, this.bgImage.width, this.bgImage.height);
+                this.ctx.drawImage(this.bgImage, 0, 0, this.width, this.height);
             }
 
             // draw all shapes
@@ -580,31 +593,40 @@ export default class CanvasState {
         this.addEventListeners()
     }
 
+    accountForDoubleClick = (e, isMouse) => {
+        if (this.didDoubleTap()) {
+            e.preventDefault()
+            e.stopPropagation()
+            this.doubleClick(e)
+        } else {
+            this.mouseDown(e, isMouse)
+        }
+
+        this.mouseDown(e, isMouse)
+    }
+
     addEventListeners = function () {
         //fixes a problem where double clicking causes text to get selected on the canvas
         let { canvas } = this
         canvas.addEventListener('selectstart', function (e) { e.preventDefault(); return false; }, false);
-        canvas.addEventListener('mousedown', (e: Object) => { this.mouseDown(e, true) }, true)
         canvas.addEventListener('mousemove', (e: Object) => { this.mouseMove(e, true) }, true)
+        // canvas.addEventListener('dblclick', (e: Object) => { this.doubleClick(e) }, true)
         canvas.addEventListener('mouseup', (e: Object) => { this.mouseUp(e, true) }, true)
-        canvas.addEventListener('dblclick', (e: Object) => { this.doubleClick(e) }, true)
-
+        
+        canvas.addEventListener('mousedown', (e: Object) => { 
+            // this.mouseDown(e, true) 
+            this.accountForDoubleClick(e, true)
+        }, true)
         // mobile
         canvas.addEventListener('touchstart', (e: Object) => {
-            if (this.didDoubleTap()) {
-                e.preventDefault()
-                e.stopPropagation()
-                this.doubleClick(e)
-            } else {
-                this.mouseDown(e)
-            }
-
-            this.mouseDown(e)
+            this.accountForDoubleClick(e)
 
         }, true)
+
         canvas.addEventListener('touchmove', (e: Object) => {
             this.mouseMove(e, false)
         }, true)
+
         canvas.addEventListener('touchend', (e: Object) => { this.mouseUp(e) }, true)
 
     }

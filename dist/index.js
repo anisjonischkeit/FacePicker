@@ -102,6 +102,48 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var imgFromUrl = function imgFromUrl(url, cb) {
+    var img = new Image();
+    img.src = url;
+    img.onload = function () {
+        cb(img);
+    };
+};
+
+var imgFromFile = function imgFromFile(file, cb) {
+    imgFromUrl(URL.createObjectURL(file), cb);
+};
+
+var getImageElementFromProps = function getImageElementFromProps(props, cb) {
+    var done = false;
+    var errorMsg = "you can only specify one of (imgUrl imgElement imgFile) in ImagusFacePicker";
+    if (props.imgUrl) {
+        done = true;
+        imgFromUrl(props.imgUrl, cb);
+    }
+    if (props.imgElement) {
+        if (done) {
+            console.error(errorMsg);
+            throw errorMsg;
+        }
+        done = true;
+        cb(props.imgElement);
+    }
+    if (props.imgFile) {
+        if (done) {
+            console.error(errorMsg);
+            throw errorMsg;
+        }
+        imgFromFile(props.imgFile, cb);
+    }
+};
+
+function bindFirstArg(fn, a) {
+    return function (b) {
+        return fn(a, b);
+    };
+}
+
 var Canvas = function (_Component) {
     _inherits(Canvas, _Component);
 
@@ -121,7 +163,7 @@ var Canvas = function (_Component) {
                 throw "setFacesInCanvasState should only be called once a CanvasState has been created";
             }
             _this.canvasState.clearFaces();
-            props.faces.forEach(function (face, idx) {
+            props.faces && props.faces.forEach(function (face, idx) {
                 var selected = false;
                 if (idx === props.selected) {
                     selected = true;
@@ -134,18 +176,22 @@ var Canvas = function (_Component) {
     _createClass(Canvas, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            this.canvasState = new _CanvasState2.default(this.canvas, this.props.onFacesUpdate);
-            this.setFacesInCanvasState(this.props);
+            var _this2 = this;
+
+            getImageElementFromProps(this.props, function (img) {
+                _this2.canvasState = new _CanvasState2.default(_this2.canvas, _this2.props.onFacesUpdate, img);
+                _this2.setFacesInCanvasState(_this2.props);
+            });
         }
     }, {
         key: 'componentWillReceiveProps',
         value: function componentWillReceiveProps(props) {
-            this.setFacesInCanvasState(props);
+            getImageElementFromProps(this.props, bindFirstArg(this.setFacesInCanvasState, props));
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this2 = this;
+            var _this3 = this;
 
             // console.log("state.faces = ")
             // console.log(this.state.faces)
@@ -153,7 +199,7 @@ var Canvas = function (_Component) {
                 width: 500,
                 height: 500,
                 ref: function ref(r) {
-                    _this2.canvas = r;
+                    _this3.canvas = r;
                 }
             });
         }
@@ -223,6 +269,8 @@ var CanvasState = function CanvasState(canvas, updateFaces, bgImage) {
 
     this.canvas = canvas;
     this.bgImage = bgImage;
+    this.bgImage.width = canvas.width;
+    this.bgImage.height = canvas.height;
     this.updateFaces = updateFaces;
 
     this.width = canvas.width;
@@ -323,6 +371,8 @@ var CanvasState = function CanvasState(canvas, updateFaces, bgImage) {
 ;
 
 var _initialiseProps = function _initialiseProps() {
+    var _this = this;
+
     this.mouseDown = function (e, isMouse) {
         var mouse = myState.getMouse(e);
 
@@ -552,7 +602,7 @@ var _initialiseProps = function _initialiseProps() {
                     break;
                 }
             }
-            if (myState.selection !== null) {
+            if (myState.selection != null) {
                 var _face3 = void 0;
                 _face3 = myState.faces[myState.selection];
                 if (_face3.eyeContains(_mouse.x, _mouse.y) || this.isTouchDevice && _face3.eyeContains(_mouse.x, _mouse.y, this.shiftedEyeHandleLength + this.shiftedEyeHandleRadius + this.eyeGrabRegionRadius, this.shiftedEyeHandleRadius) || _face3.dragHandleContains(_mouse.x, _mouse.y, myState.rotateLine, myState.rotateRad)) {
@@ -593,6 +643,14 @@ var _initialiseProps = function _initialiseProps() {
         }
     };
 
+    this.getReturnableFaces = function () {
+        return myState.faces.map(function (face) {
+            return {
+                eyes: face.eyes
+            };
+        });
+    };
+
     this.mouseUp = function (e, isMouse) {
         if (!isMouse && !myState.mouseMoved && !myState.justSelected && myState.selection !== null) {
             myState.selection = null;
@@ -605,12 +663,7 @@ var _initialiseProps = function _initialiseProps() {
         myState.onSquare = false;
         myState.rotating = false;
 
-        var returnableFaces = myState.faces.map(function (face) {
-            return {
-                eyes: face.eyes
-            };
-        });
-        myState.updateFaces(returnableFaces, myState.selection);
+        myState.updateFaces(this.getReturnableFaces(), myState.selection);
     };
 
     this.didDoubleTap = function () {
@@ -634,6 +687,7 @@ var _initialiseProps = function _initialiseProps() {
         var my = mouse.y;
         var faces = myState.faces;
         var l = faces.length;
+        var onFace = false;
 
         // if there is a face in the location of the mouse then remove that face from our faces array and redraw
         for (var i = l - 1; i >= 0; i--) {
@@ -641,27 +695,31 @@ var _initialiseProps = function _initialiseProps() {
                 myState.faces.splice(i, 1);
                 myState.selection = null;
                 myState.valid = false;
-                return;
+                onFace = true;
+                break;
             }
         }
-        // otherwise add a new face
-        myState.addFace({
-            eyes: {
-                left: {
-                    x: mouse.x - 20,
-                    y: mouse.y - 20
+
+        if (!onFace) {
+            // otherwise add a new face
+            myState.addFace({
+                eyes: {
+                    left: {
+                        x: mouse.x - 20,
+                        y: mouse.y - 20
+                    },
+                    right: {
+                        x: mouse.x + 20,
+                        y: mouse.y - 20
+                    }
                 },
-                right: {
-                    x: mouse.x + 20,
-                    y: mouse.y - 20
-                }
-            },
-            centre: {
-                x: mouse.x,
-                y: mouse.y
-            },
-            radius: 60
-        });
+                centre: {
+                    x: mouse.x,
+                    y: mouse.y
+                },
+                radius: 60
+            });
+        }
     };
 
     this.addFace = function (face, selected) {
@@ -683,6 +741,11 @@ var _initialiseProps = function _initialiseProps() {
         this.ctx.clearRect(0, 0, this.width, this.height);
     };
 
+    this.setBgImg = function (img) {
+        myState.bgImage = img;
+        myState.valid = false;
+    };
+
     this.draw = function () {
 
         // if our state is invalid, redraw and validate!
@@ -693,7 +756,7 @@ var _initialiseProps = function _initialiseProps() {
 
             // load background image first so that everything else gets played ontop of it
             if (this.bgImage) {
-                this.ctx.drawImage(this.bgImage, 0, 0, this.bgImage.width, this.bgImage.height);
+                this.ctx.drawImage(this.bgImage, 0, 0, this.width, this.height);
             }
 
             // draw all shapes
@@ -797,8 +860,20 @@ var _initialiseProps = function _initialiseProps() {
         this.addEventListeners();
     };
 
+    this.accountForDoubleClick = function (e, isMouse) {
+        if (_this.didDoubleTap()) {
+            e.preventDefault();
+            e.stopPropagation();
+            _this.doubleClick(e);
+        } else {
+            _this.mouseDown(e, isMouse);
+        }
+
+        _this.mouseDown(e, isMouse);
+    };
+
     this.addEventListeners = function () {
-        var _this = this;
+        var _this2 = this;
 
         //fixes a problem where double clicking causes text to get selected on the canvas
         var canvas = this.canvas;
@@ -806,36 +881,29 @@ var _initialiseProps = function _initialiseProps() {
         canvas.addEventListener('selectstart', function (e) {
             e.preventDefault();return false;
         }, false);
-        canvas.addEventListener('mousedown', function (e) {
-            _this.mouseDown(e, true);
-        }, true);
         canvas.addEventListener('mousemove', function (e) {
-            _this.mouseMove(e, true);
+            _this2.mouseMove(e, true);
         }, true);
+        // canvas.addEventListener('dblclick', (e: Object) => { this.doubleClick(e) }, true)
         canvas.addEventListener('mouseup', function (e) {
-            _this.mouseUp(e, true);
-        }, true);
-        canvas.addEventListener('dblclick', function (e) {
-            _this.doubleClick(e);
+            _this2.mouseUp(e, true);
         }, true);
 
+        canvas.addEventListener('mousedown', function (e) {
+            // this.mouseDown(e, true) 
+            _this2.accountForDoubleClick(e, true);
+        }, true);
         // mobile
         canvas.addEventListener('touchstart', function (e) {
-            if (_this.didDoubleTap()) {
-                e.preventDefault();
-                e.stopPropagation();
-                _this.doubleClick(e);
-            } else {
-                _this.mouseDown(e);
-            }
+            _this2.accountForDoubleClick(e);
+        }, true);
 
-            _this.mouseDown(e);
-        }, true);
         canvas.addEventListener('touchmove', function (e) {
-            _this.mouseMove(e, false);
+            _this2.mouseMove(e, false);
         }, true);
+
         canvas.addEventListener('touchend', function (e) {
-            _this.mouseUp(e);
+            _this2.mouseUp(e);
         }, true);
     };
 
