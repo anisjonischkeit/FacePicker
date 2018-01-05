@@ -50,6 +50,7 @@ class App extends Component {
           faces={this.state.faces}
           selected={this.state.selected}
           onFacesUpdate={this.updateFaces}
+          imgUrl="https://static.pexels.com/photos/207962/pexels-photo-207962.jpeg"
         />
         <button onClick={this.resetStage}>reset</button>
       </div>
@@ -57,3 +58,23 @@ class App extends Component {
   }
 }
 ```
+
+## Accepted Props
+
+### faces
+A list of faces that you wish to display on the FacePicker
+
+### selected
+The index of the face you wish to have selected
+
+## onFaceUpdate
+Callback that fires whenever a face's position is updated on the FacePicker
+
+## imgUrl
+The url of an image to be passed in
+
+## imgElement
+The image element of an image to be passed in
+
+## imgFile
+The image file of an image to be passed in
