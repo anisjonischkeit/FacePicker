@@ -67,14 +67,14 @@ A list of faces that you wish to display on the FacePicker
 ### selected
 The index of the face you wish to have selected
 
-## onFaceUpdate
+### onFaceUpdate
 Callback that fires whenever a face's position is updated on the FacePicker
 
-## imgUrl
+### imgUrl
 The url of an image to be passed in
 
-## imgElement
+### imgElement
 The image element of an image to be passed in
 
-## imgFile
+### imgFile
 The image file of an image to be passed in
