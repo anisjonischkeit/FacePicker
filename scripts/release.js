@@ -45,9 +45,15 @@ prompt.get(schema, function (err, result) {
 
     num = parseInt(version[pos])
     version[pos] = num + 1
+
+    for (let i = pos + 1; i <= 2; i++) {
+        version[i] = 0
+    }
+
     
 
     package.version = version.join(".")
+    console.log("new version:", package.version)
 
     fs.writeFileSync('package.json', JSON.stringify(package, null, 4), 'utf8');
     
