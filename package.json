@@ -1,6 +1,6 @@
 {
     "name": "ImagusFacePicker",
-    "version": "1.1.7",
+    "version": "1.2.0",
     "main": "dist/index.js",
     "author": "Anis Jonischkeit <ajonischkeit@imagus.com.au>",
     "license": "No License",
