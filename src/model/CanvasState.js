@@ -18,21 +18,54 @@ var myState = null
 export default class CanvasState {
     constructor(canvas: HTMLCanvasElement, updateFaces: (faces) => void, bgImage: HTMLImageElement) {
         this.canvas = canvas
+
+        // **** Then events! ****
+
+        // This is an example of a closure!
+        // Right here "this" means the CanvasState. But we are making events on the Canvas itself,
+        // and when the events are fired on the canvas the variable "this" is going to mean the canvas!
+        // Since we still want to use this particular CanvasState in the events we have to save a reference to it.
+        // This is our reference!
+        myState = this;
+
+        this.setup(updateFaces, bgImage)
+
+        window.onresize = function (event) {
+            this.scaleFactor = {
+                x: this.canvas.clientWidth / this.width,
+                y: this.canvas.clientHeight / this.height
+            }
+        }.bind(this);
+
+        this.addEventListeners()
+
+        setInterval(function () { myState.draw(); }, myState.interval);
+    }
+
+    setUserVariables = (updateFaces, bgImage, faces) => {
         this.bgImage = bgImage
-        this.bgImage.width = canvas.width
-        this.bgImage.height = canvas.height
+        if (bgImage) {
+            this.bgImage.width = this.canvas.width
+            this.bgImage.height = this.canvas.height
+        }
         this.updateFaces = updateFaces
 
-        this.width = canvas.width
-        this.height = canvas.height
+    }
 
-        this.ctx = canvas.getContext('2d');
+    setup = (updateFaces, bgImage) => {
+
+        this.setUserVariables(updateFaces, bgImage)
+
+        this.width = this.canvas.width
+        this.height = this.canvas.height
+
+        this.ctx = this.canvas.getContext('2d');
 
 
         //used for getting an accurate mouse position when an image is resized
         this.scaleFactor = {
-            x: canvas.clientWidth / this.width,
-            y: canvas.clientHeight / this.height
+            x: this.canvas.clientWidth / this.width,
+            y: this.canvas.clientHeight / this.height
         }
 
         this.valid = false; // when set to false, the canvas will redraw everything
@@ -71,34 +104,16 @@ export default class CanvasState {
         this.shiftedEyeHandleLength = 25
         this.shiftedEyeHandleRadius = 16
 
-        if (window.innerWidth < canvas.width) {
-            this.eyeGrabRegionRadius *= (canvas.width / window.innerWidth)
-            this.shiftedEyeHandleLength *= (canvas.width / window.innerWidth)
-            this.shiftedEyeHandleRadius *= (canvas.width / window.innerWidth)
-            this.rotateRad *= (canvas.width / window.innerWidth) // the length of the rotation handle
+        if (window.innerWidth < this.canvas.width) {
+            this.eyeGrabRegionRadius *= (this.canvas.width / window.innerWidth)
+            this.shiftedEyeHandleLength *= (this.canvas.width / window.innerWidth)
+            this.shiftedEyeHandleRadius *= (this.canvas.width / window.innerWidth)
+            this.rotateRad *= (this.canvas.width / window.innerWidth) // the length of the rotation handle
         }
 
-        // **** Then events! ****
-
-        // This is an example of a closure!
-        // Right here "this" means the CanvasState. But we are making events on the Canvas itself,
-        // and when the events are fired on the canvas the variable "this" is going to mean the canvas!
-        // Since we still want to use this particular CanvasState in the events we have to save a reference to it.
-        // This is our reference!
-        myState = this;
 
         // updates the scale factor when the window resizes (when the canvas could have a different size)
-        window.onresize = function (event) {
-            this.scaleFactor = {
-                x: this.canvas.clientWidth / this.width,
-                y: this.canvas.clientHeight / this.height
-            }
-        }.bind(this);
-
-        this.addEventListeners()
-
-        setInterval(function () { myState.draw(); }, myState.interval);
-    }
+    } 
 
     mouseDown = function (e, isMouse) {
         var mouse = myState.getMouse(e);
