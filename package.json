@@ -8,7 +8,6 @@
     "peerDependencies": {
         "react": "^16.2.0"
     },
-    "dependencies": {},
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "webpack --watch",
@@ -29,6 +28,7 @@
         "babel-preset-react-app": "^3.1.0",
         "flow-bin": "^0.62.0",
         "prompt": "^1.0.0",
-        "webpack": "^2.6.1"
+        "webpack": "^2.6.1",
+        "elm-webpack-loader": "^4.4.0"
     }
 }

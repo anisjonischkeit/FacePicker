@@ -1,4 +1,5 @@
 import React from "react"
-import Canvas from "./components/ImagusCanvas"
+// import Canvas from "./components/ImagusCanvas"
+import ReactWrapper from "./ReactWrapper"
 
-export default Canvas
+export default ReactWrapper
