@@ -448,8 +448,8 @@ offsetPositionWDefault = offsetPosition
 
 offsetPosition : Json.Decoder Position
 offsetPosition =
-    Json.map2 Position (Json.field "offsetX" Json.float) (Json.field "offsetY" Json.float)
-
+    Json.map2 Position (Json.field "layerX" Json.float) (Json.field "layerY" Json.float)
+    
 
 -- ------------------------------------------------------------------
 -- -- SVG FUNCS
@@ -502,8 +502,15 @@ createSvgFace scaleFactor captureEvents isSelected idx realEyes =
             , cy <| toString screenFaceCentre.y
             , r <| toString <| radiusFromEyes eyes
             , style fullStyle
-            , VirtualDom.onWithOptions "mousemove" options (Json.map (MouseMoveOnFace faceOffset) offsetPosition )
-            , VirtualDom.onWithOptions "mousedown" options (Json.map (MouseDownOnFace idx) offsetPosition)
+            
+            , VirtualDom.onWithOptions "mousemove" options 
+                <| Json.map (MouseMoveOnFace faceOffset) offsetPosition
+
+            -- , VirtualDom.onWithOptions "touchmove" options 
+            --     <| Json.map (MouseMoveOnFace faceOffset) offsetPosition
+
+            , VirtualDom.onWithOptions "mousedown" options
+                <| Json.map (MouseDownOnFace idx) offsetPosition
             ] []
 
 
