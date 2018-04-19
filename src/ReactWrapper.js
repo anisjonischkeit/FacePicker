@@ -45,7 +45,7 @@ export default class extends React.Component<PropsType, StateType> {
             }.bind(this)
         }
 
-        this.elmPorts.newFaces.send([nextProps.faces, nextProps.selection, nextProps.imgUrl])
+        this.elmPorts.newFaces.send([nextProps.faces, nextProps.selection])
         return false;
     }
 
