@@ -8,32 +8,32 @@
 
 ```
 import ImagusFacePicker from "ImagusFacePicker"
-<ImagusFacePicker
-  faces={[
-    {
-      left : {
-        x : 150,
-        y : 150
-      },
-      right : {
-        x : 250,
-        y : 150
+<div style={{ width: "50%", height: "500px"}}>
+  <ImagusFacePicker
+    faces={[
+      {
+        left : {
+          x : 150,
+          y : 150
+        },
+        right : {
+          x : 250,
+          y : 150
+        }
       }
-    }
-  ]}
-  selection={null}
-  facesDidUpdate={(faces, selection) => this.setState({
-    ...this.state,
-    faces: faces,
-    selection: selection
-  })}
-  imgUrl={this.state.imgUrl}
-  maxSize={{
-    width: 300,
-    height: 300
-  }}
-/>
+    ]}
+    selection={null}
+    facesDidUpdate={(faces, selection) => this.setState({
+      ...this.state,
+      faces: faces,
+      selection: selection
+    })}
+    imgUrl={this.state.imgUrl}
+  />
+</div>
 ```
+
+make sure to wrap the imagus face picker in a div with a width and height. The facepicker will stretch or shrink to whatever it div is containing it
 
 ## Accepted Props
 

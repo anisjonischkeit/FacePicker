@@ -52,26 +52,40 @@ export default class extends React.Component<PropsType, StateType> {
     initialize = node => {
         if(node === null) return;
 
+        this.containerDiv = node
+        const clientRect = node.getBoundingClientRect()
+        
         let faces = []
         let selection = null
         const maxSize = {
-            width: null,
-            height: null
+            width: Math.floor(clientRect.width),
+            height: Math.floor(clientRect.height)
         }
+        
+        window.addEventListener("resize", e => {
+            const clientRect = this.containerDiv.getBoundingClientRect()
+            const maxSize = {
+                width: Math.floor(clientRect.width),
+                height: Math.floor(clientRect.height)
+            }
+            this.elmPorts.newContainerSize.send(maxSize)
+        })
+
         if (this.props.faces !== undefined) {
             faces = this.props.faces
         } 
         if (this.props.selection !== undefined) {
             selection = this.props.selection
         } 
-        if (this.props.maxSize) {
-            if (this.props.maxSize.width !== undefined) {
-                maxSize.width = this.props.maxSize.width
-            } 
-            if (this.props.maxSize.height !== undefined) {
-                maxSize.height = this.props.maxSize.height
-            } 
-        }
+
+        // if (this.props.maxSize) {
+        //     if (this.props.maxSize.width !== undefined) {
+        //         maxSize.width = this.props.maxSize.width
+        //     } 
+        //     if (this.props.maxSize.height !== undefined) {
+        //         maxSize.height = this.props.maxSize.height
+        //     } 
+        // }
 
         console.log(maxSize)
         var app = ElmApp.Main.embed(node, {
@@ -80,6 +94,7 @@ export default class extends React.Component<PropsType, StateType> {
             imgUrl: this.props.imgUrl,
             maxSize: maxSize
         });
+
         this.elmPorts = app.ports
 
         app.ports.getDim.subscribe(url => {
@@ -100,6 +115,6 @@ export default class extends React.Component<PropsType, StateType> {
     }
 
     render() {
-        return React.createElement('div', { ref: this.initialize });
+        return React.createElement('div', { ref: this.initialize, style: { width: "100%", height: "100%", textAlign: "left"} });
     }
 } 

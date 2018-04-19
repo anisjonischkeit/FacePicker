@@ -111,6 +111,7 @@ type Msg
     | MouseMoveOnRightEye Position Position
     | MouseUp Mouse.Position
     | UpdateDim Window.Size
+    | UpdateMaxSize SizeWithMaybes
     | UpdateStateFromPort (Faces, Maybe Int, String, Window.Size)
     | UpdateFacesFromPort (Faces, Maybe Int)
     | AddFace
@@ -180,6 +181,10 @@ update msg model =
 
                 Up -> ( { model | mousePos = absoluteMousePos } , Cmd.none )
                 Down -> ( { model | mousePos = absoluteMousePos } , Cmd.none )
+
+
+        UpdateMaxSize maxSize ->
+            ( { model | maxSize = maxSize }, Cmd.none )
 
 
         UpdateDim imgSize ->
@@ -384,7 +389,8 @@ background model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Window.resizes WindowSize
+        [ newContainerSize UpdateMaxSize
+        -- Window.resizes WindowSize
         , newDim UpdateDim
         , newFaces UpdateFacesFromPort
         , newState UpdateStateFromPort
@@ -396,6 +402,7 @@ port newDim : (Window.Size -> msg) -> Sub msg
 port newFaces : ((Faces, Maybe Int) -> msg) -> Sub msg
 
 port newState : ((Faces, Maybe Int, String, Window.Size) -> msg) -> Sub msg
+port newContainerSize : ((SizeWithMaybes) -> msg) -> Sub msg
 
 port facesChanged : (Faces, Maybe Int) -> Cmd msg
 
