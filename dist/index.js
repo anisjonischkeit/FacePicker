@@ -125,7 +125,7 @@ var _class = function (_React$Component) {
                 }.bind(_this);
             }
 
-            _this.elmPorts.newFaces.send([nextProps.faces, nextProps.selection, nextProps.imgUrl]);
+            _this.elmPorts.newFaces.send([nextProps.faces, nextProps.selection]);
             return false;
         };
 
