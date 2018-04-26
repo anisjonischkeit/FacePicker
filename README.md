@@ -1,6 +1,8 @@
 # Installing
 
-`yarn add git+ssh://git@bitbucket.org/imagus/ImagusFacePicker.git#latest`
+```
+yarn add git+ssh://git@github.com/anisjonischkeit/FacePicker.git#latest
+```
 
 # Usage
 
@@ -75,3 +77,11 @@ The url of an image to be passed in
 ### maxSize
 The Maximum size that the image should be
 
+
+# Deploying a new version to bitbucket
+
+make sure all of your changes are commited to git and pushed to the server, then run:
+
+```
+yarn release
+```
