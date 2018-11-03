@@ -61,7 +61,7 @@ type alias Model =
     { size : Window.Size
     , maxSize : SizeWithMaybes
     , mousePos : Position
-    , mouseState: MouseState
+    , mouseState : MouseState
     , imgSize : Maybe Window.Size
     , faceSelection : Maybe Int
     , faces : Faces
