@@ -1,3 +1,7 @@
+# Face Picker
+
+This package exposes a React component that you can drop into your existing react app.
+
 # Installing
 
 ```
