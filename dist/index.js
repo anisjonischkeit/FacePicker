@@ -144,10 +144,6 @@ var _class = function (_React$Component) {
     };
 
     _this.shouldComponentUpdate = function (nextProps) {
-      // if (JSON.stringify(this.props.faces) === JSON.stringify(nextProps.faces) && this.props.selection === nextProps.selection) {
-      // } else {
-      // }
-
       if (_this.props.imgUrl !== nextProps.imgUrl) {
         var img = new Image();
         img.src = nextProps.imgUrl;
@@ -163,6 +159,7 @@ var _class = function (_React$Component) {
     _this.componentWillUnmount = function () {
       _this.elmPorts.getDim.unsubscribe(_this.handleGetDim);
       _this.elmPorts.facesChanged.unsubscribe(_this.handleFacesChanged);
+      window.removeEventListener("resize", _this.resizeHandler);
     };
 
     _this.componentDidMount = function () {
@@ -186,7 +183,6 @@ var _class = function (_React$Component) {
         selection = _this.props.selection;
       }
 
-      console.log(maxSize);
       var app = _Main2.default.Main.embed(_this.containerDiv, {
         faces: faces,
         selection: selection,
@@ -217,10 +213,6 @@ var _class = function (_React$Component) {
           _this2.containerDiv = _ref3;
         }
       });
-      // React.createElement("div", {
-      //   ref: this.initialize,
-      //   style: { width: "100%", height: "100%", textAlign: "left" }
-      // });
     }
   }]);
 

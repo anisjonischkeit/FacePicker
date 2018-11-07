@@ -61,10 +61,6 @@ export default class extends React.Component<PropsType, StateType> {
   };
 
   shouldComponentUpdate = nextProps => {
-    // if (JSON.stringify(this.props.faces) === JSON.stringify(nextProps.faces) && this.props.selection === nextProps.selection) {
-    // } else {
-    // }
-
     if (this.props.imgUrl !== nextProps.imgUrl) {
       let img = new Image();
       img.src = nextProps.imgUrl;
@@ -85,6 +81,7 @@ export default class extends React.Component<PropsType, StateType> {
   componentWillUnmount = () => {
     this.elmPorts.getDim.unsubscribe(this.handleGetDim);
     this.elmPorts.facesChanged.unsubscribe(this.handleFacesChanged);
+    window.removeEventListener("resize", this.resizeHandler);
   };
 
   componentDidMount = () => {
@@ -108,7 +105,6 @@ export default class extends React.Component<PropsType, StateType> {
       selection = this.props.selection;
     }
 
-    console.log(maxSize);
     var app = ElmApp.Main.embed(this.containerDiv, {
       faces: faces,
       selection: selection,
@@ -131,9 +127,5 @@ export default class extends React.Component<PropsType, StateType> {
         }}
       />
     );
-    // React.createElement("div", {
-    //   ref: this.initialize,
-    //   style: { width: "100%", height: "100%", textAlign: "left" }
-    // });
   }
 }
