@@ -27,7 +27,13 @@ type StateType = {};
 export default class extends React.Component<PropsType, StateType> {
   constructor(props) {
     super(props);
+
+    this.handleGetDim = this.handleGetDim.bind(this);
+    this.handleFacesChanged = this.handleFacesChanged.bind(this);
+    this.resizeHandler = this.resizeHandler.bind(this);
   }
+
+  containerDiv = null;
 
   handleGetDim = url => {
     // recieve the url for the image through
@@ -43,6 +49,15 @@ export default class extends React.Component<PropsType, StateType> {
 
   handleFacesChanged = ([faces, selection]) => {
     this.props.facesDidUpdate && this.props.facesDidUpdate(faces, selection);
+  };
+
+  resizeHandler = e => {
+    const clientRect = this.containerDiv.getBoundingClientRect();
+    const maxSize = {
+      width: Math.floor(clientRect.width),
+      height: Math.floor(clientRect.height)
+    };
+    this.elmPorts.newContainerSize.send(maxSize);
   };
 
   shouldComponentUpdate = nextProps => {
@@ -72,11 +87,10 @@ export default class extends React.Component<PropsType, StateType> {
     this.elmPorts.facesChanged.unsubscribe(this.handleFacesChanged);
   };
 
-  initialize = node => {
-    if (node === null) return;
+  componentDidMount = () => {
+    if (this.containerDiv === null) return;
 
-    this.containerDiv = node;
-    const clientRect = node.getBoundingClientRect();
+    const clientRect = this.containerDiv.getBoundingClientRect();
 
     let faces = [];
     let selection = null;
@@ -85,14 +99,7 @@ export default class extends React.Component<PropsType, StateType> {
       height: Math.floor(clientRect.height)
     };
 
-    window.addEventListener("resize", e => {
-      const clientRect = this.containerDiv.getBoundingClientRect();
-      const maxSize = {
-        width: Math.floor(clientRect.width),
-        height: Math.floor(clientRect.height)
-      };
-      this.elmPorts.newContainerSize.send(maxSize);
-    });
+    window.addEventListener("resize", this.resizeHandler);
 
     if (this.props.faces !== undefined) {
       faces = this.props.faces;
@@ -101,17 +108,8 @@ export default class extends React.Component<PropsType, StateType> {
       selection = this.props.selection;
     }
 
-    // if (this.props.maxSize) {
-    //     if (this.props.maxSize.width !== undefined) {
-    //         maxSize.width = this.props.maxSize.width
-    //     }
-    //     if (this.props.maxSize.height !== undefined) {
-    //         maxSize.height = this.props.maxSize.height
-    //     }
-    // }
-
     console.log(maxSize);
-    var app = ElmApp.Main.embed(node, {
+    var app = ElmApp.Main.embed(this.containerDiv, {
       faces: faces,
       selection: selection,
       imgUrl: this.props.imgUrl,
@@ -125,9 +123,17 @@ export default class extends React.Component<PropsType, StateType> {
   };
 
   render() {
-    return React.createElement("div", {
-      ref: this.initialize,
-      style: { width: "100%", height: "100%", textAlign: "left" }
-    });
+    return (
+      <div
+        style={{ width: "100%", height: "100%", textAlign: "left" }}
+        ref={ref => {
+          this.containerDiv = ref;
+        }}
+      />
+    );
+    // React.createElement("div", {
+    //   ref: this.initialize,
+    //   style: { width: "100%", height: "100%", textAlign: "left" }
+    // });
   }
 }

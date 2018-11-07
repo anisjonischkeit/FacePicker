@@ -112,6 +112,8 @@ var _class = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, props));
 
+    _this.containerDiv = null;
+
     _this.handleGetDim = function (url) {
       // recieve the url for the image through
       // the `getDim` port in Main.elm
@@ -130,6 +132,15 @@ var _class = function (_React$Component) {
           selection = _ref2[1];
 
       _this.props.facesDidUpdate && _this.props.facesDidUpdate(faces, selection);
+    };
+
+    _this.resizeHandler = function (e) {
+      var clientRect = _this.containerDiv.getBoundingClientRect();
+      var maxSize = {
+        width: Math.floor(clientRect.width),
+        height: Math.floor(clientRect.height)
+      };
+      _this.elmPorts.newContainerSize.send(maxSize);
     };
 
     _this.shouldComponentUpdate = function (nextProps) {
@@ -154,11 +165,10 @@ var _class = function (_React$Component) {
       _this.elmPorts.facesChanged.unsubscribe(_this.handleFacesChanged);
     };
 
-    _this.initialize = function (node) {
-      if (node === null) return;
+    _this.componentDidMount = function () {
+      if (_this.containerDiv === null) return;
 
-      _this.containerDiv = node;
-      var clientRect = node.getBoundingClientRect();
+      var clientRect = _this.containerDiv.getBoundingClientRect();
 
       var faces = [];
       var selection = null;
@@ -167,14 +177,7 @@ var _class = function (_React$Component) {
         height: Math.floor(clientRect.height)
       };
 
-      window.addEventListener("resize", function (e) {
-        var clientRect = _this.containerDiv.getBoundingClientRect();
-        var maxSize = {
-          width: Math.floor(clientRect.width),
-          height: Math.floor(clientRect.height)
-        };
-        _this.elmPorts.newContainerSize.send(maxSize);
-      });
+      window.addEventListener("resize", _this.resizeHandler);
 
       if (_this.props.faces !== undefined) {
         faces = _this.props.faces;
@@ -183,17 +186,8 @@ var _class = function (_React$Component) {
         selection = _this.props.selection;
       }
 
-      // if (this.props.maxSize) {
-      //     if (this.props.maxSize.width !== undefined) {
-      //         maxSize.width = this.props.maxSize.width
-      //     }
-      //     if (this.props.maxSize.height !== undefined) {
-      //         maxSize.height = this.props.maxSize.height
-      //     }
-      // }
-
       console.log(maxSize);
-      var app = _Main2.default.Main.embed(node, {
+      var app = _Main2.default.Main.embed(_this.containerDiv, {
         faces: faces,
         selection: selection,
         imgUrl: _this.props.imgUrl,
@@ -206,16 +200,27 @@ var _class = function (_React$Component) {
       app.ports.facesChanged.subscribe(_this.handleFacesChanged);
     };
 
+    _this.handleGetDim = _this.handleGetDim.bind(_this);
+    _this.handleFacesChanged = _this.handleFacesChanged.bind(_this);
+    _this.resizeHandler = _this.resizeHandler.bind(_this);
     return _this;
   }
 
   _createClass(_class, [{
     key: "render",
     value: function render() {
+      var _this2 = this;
+
       return _react2.default.createElement("div", {
-        ref: this.initialize,
-        style: { width: "100%", height: "100%", textAlign: "left" }
+        style: { width: "100%", height: "100%", textAlign: "left" },
+        ref: function ref(_ref3) {
+          _this2.containerDiv = _ref3;
+        }
       });
+      // React.createElement("div", {
+      //   ref: this.initialize,
+      //   style: { width: "100%", height: "100%", textAlign: "left" }
+      // });
     }
   }]);
 
