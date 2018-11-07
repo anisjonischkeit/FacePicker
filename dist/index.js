@@ -112,6 +112,26 @@ var _class = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, props));
 
+    _this.handleGetDim = function (url) {
+      // recieve the url for the image through
+      // the `getDim` port in Main.elm
+      var img = new Image();
+      img.src = url;
+      img.onload = function () {
+        // send the height and width back to elm through
+        // the `newDim` port in Main.elm
+        this.elmPorts.newDim.send({ height: img.height, width: img.width });
+      };
+    };
+
+    _this.handleFacesChanged = function (_ref) {
+      var _ref2 = _slicedToArray(_ref, 2),
+          faces = _ref2[0],
+          selection = _ref2[1];
+
+      _this.props.facesDidUpdate && _this.props.facesDidUpdate(faces, selection);
+    };
+
     _this.shouldComponentUpdate = function (nextProps) {
       // if (JSON.stringify(this.props.faces) === JSON.stringify(nextProps.faces) && this.props.selection === nextProps.selection) {
       // } else {
@@ -190,28 +210,6 @@ var _class = function (_React$Component) {
   }
 
   _createClass(_class, [{
-    key: "handleGetDim",
-    value: function handleGetDim(url) {
-      // recieve the url for the image through
-      // the `getDim` port in Main.elm
-      var img = new Image();
-      img.src = url;
-      img.onload = function () {
-        // send the height and width back to elm through
-        // the `newDim` port in Main.elm
-        this.elmPorts.newDim.send({ height: img.height, width: img.width });
-      };
-    }
-  }, {
-    key: "handleFacesChanged",
-    value: function handleFacesChanged(_ref) {
-      var _ref2 = _slicedToArray(_ref, 2),
-          faces = _ref2[0],
-          selection = _ref2[1];
-
-      this.props.facesDidUpdate && this.props.facesDidUpdate(faces, selection);
-    }
-  }, {
     key: "render",
     value: function render() {
       return _react2.default.createElement("div", {
