@@ -122,7 +122,7 @@ var _class = function (_React$Component) {
       img.onload = function () {
         // send the height and width back to elm through
         // the `newDim` port in Main.elm
-        this.elmPorts.newDim.send({ height: img.height, width: img.width });
+        _this.elmPorts.newDim.send({ height: img.height, width: img.width });
       };
     };
 

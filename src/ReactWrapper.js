@@ -40,7 +40,7 @@ export default class extends React.Component<PropsType, StateType> {
     // the `getDim` port in Main.elm
     let img = new Image();
     img.src = url;
-    img.onload = function() {
+    img.onload = () => {
       // send the height and width back to elm through
       // the `newDim` port in Main.elm
       this.elmPorts.newDim.send({ height: img.height, width: img.width });
