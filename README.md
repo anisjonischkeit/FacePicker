@@ -1,3 +1,7 @@
+# Face Picker
+
+This package exposes a React component that you can drop into your existing react app.
+
 # Installing
 
 ```
@@ -55,7 +59,7 @@ The url of an image to be passed in
 
 The Maximum size that the image should be
 
-# Deploying a new version to bitbucket
+# Releasing a new version to github
 
 make sure all of your changes are commited to git and pushed to the server, then run:
 
