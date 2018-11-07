@@ -29,7 +29,7 @@ export default class extends React.Component<PropsType, StateType> {
     super(props);
   }
 
-  handleGetDim(url) {
+  handleGetDim = url => {
     // recieve the url for the image through
     // the `getDim` port in Main.elm
     let img = new Image();
@@ -39,11 +39,11 @@ export default class extends React.Component<PropsType, StateType> {
       // the `newDim` port in Main.elm
       this.elmPorts.newDim.send({ height: img.height, width: img.width });
     };
-  }
+  };
 
-  handleFacesChanged([faces, selection]) {
+  handleFacesChanged = ([faces, selection]) => {
     this.props.facesDidUpdate && this.props.facesDidUpdate(faces, selection);
-  }
+  };
 
   shouldComponentUpdate = nextProps => {
     // if (JSON.stringify(this.props.faces) === JSON.stringify(nextProps.faces) && this.props.selection === nextProps.selection) {
