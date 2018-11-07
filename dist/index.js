@@ -81,7 +81,7 @@ module.exports = require("react");
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -105,110 +105,118 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _class = function (_React$Component) {
-    _inherits(_class, _React$Component);
+  _inherits(_class, _React$Component);
 
-    function _class(props) {
-        _classCallCheck(this, _class);
+  function _class(props) {
+    _classCallCheck(this, _class);
 
-        var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, props));
 
-        _this.shouldComponentUpdate = function (nextProps) {
-            // if (JSON.stringify(this.props.faces) === JSON.stringify(nextProps.faces) && this.props.selection === nextProps.selection) {
-            // } else {
-            // }
+    _this.containerDiv = null;
 
-            if (_this.props.imgUrl !== nextProps.imgUrl) {
-                var img = new Image();
-                img.src = nextProps.imgUrl;
-                img.onload = function () {
-                    this.elmPorts.newState.send([nextProps.faces, nextProps.selection, nextProps.imgUrl, { height: img.height, width: img.width }]);
-                }.bind(_this);
-            }
+    _this.handleGetDim = function (url) {
+      // recieve the url for the image through
+      // the `getDim` port in Main.elm
+      var img = new Image();
+      img.src = url;
+      img.onload = function () {
+        // send the height and width back to elm through
+        // the `newDim` port in Main.elm
+        _this.elmPorts.newDim.send({ height: img.height, width: img.width });
+      };
+    };
 
-            _this.elmPorts.newFaces.send([nextProps.faces, nextProps.selection]);
-            return false;
-        };
+    _this.handleFacesChanged = function (_ref) {
+      var _ref2 = _slicedToArray(_ref, 2),
+          faces = _ref2[0],
+          selection = _ref2[1];
 
-        _this.initialize = function (node) {
-            if (node === null) return;
+      _this.props.facesDidUpdate && _this.props.facesDidUpdate(faces, selection);
+    };
 
-            _this.containerDiv = node;
-            var clientRect = node.getBoundingClientRect();
+    _this.resizeHandler = function (e) {
+      var clientRect = _this.containerDiv.getBoundingClientRect();
+      var maxSize = {
+        width: Math.floor(clientRect.width),
+        height: Math.floor(clientRect.height)
+      };
+      _this.elmPorts.newContainerSize.send(maxSize);
+    };
 
-            var faces = [];
-            var selection = null;
-            var maxSize = {
-                width: Math.floor(clientRect.width),
-                height: Math.floor(clientRect.height)
-            };
+    _this.shouldComponentUpdate = function (nextProps) {
+      if (_this.props.imgUrl !== nextProps.imgUrl) {
+        var img = new Image();
+        img.src = nextProps.imgUrl;
+        img.onload = function () {
+          this.elmPorts.newState.send([nextProps.faces, nextProps.selection, nextProps.imgUrl, { height: img.height, width: img.width }]);
+        }.bind(_this);
+      }
 
-            window.addEventListener("resize", function (e) {
-                var clientRect = _this.containerDiv.getBoundingClientRect();
-                var maxSize = {
-                    width: Math.floor(clientRect.width),
-                    height: Math.floor(clientRect.height)
-                };
-                _this.elmPorts.newContainerSize.send(maxSize);
-            });
+      _this.elmPorts.newFaces.send([nextProps.faces, nextProps.selection]);
+      return false;
+    };
 
-            if (_this.props.faces !== undefined) {
-                faces = _this.props.faces;
-            }
-            if (_this.props.selection !== undefined) {
-                selection = _this.props.selection;
-            }
+    _this.componentWillUnmount = function () {
+      _this.elmPorts.getDim.unsubscribe(_this.handleGetDim);
+      _this.elmPorts.facesChanged.unsubscribe(_this.handleFacesChanged);
+      window.removeEventListener("resize", _this.resizeHandler);
+    };
 
-            // if (this.props.maxSize) {
-            //     if (this.props.maxSize.width !== undefined) {
-            //         maxSize.width = this.props.maxSize.width
-            //     } 
-            //     if (this.props.maxSize.height !== undefined) {
-            //         maxSize.height = this.props.maxSize.height
-            //     } 
-            // }
+    _this.componentDidMount = function () {
+      if (_this.containerDiv === null) return;
 
-            console.log(maxSize);
-            var app = _Main2.default.Main.embed(node, {
-                faces: faces,
-                selection: selection,
-                imgUrl: _this.props.imgUrl,
-                maxSize: maxSize
-            });
+      var clientRect = _this.containerDiv.getBoundingClientRect();
 
-            _this.elmPorts = app.ports;
+      var faces = [];
+      var selection = null;
+      var maxSize = {
+        width: Math.floor(clientRect.width),
+        height: Math.floor(clientRect.height)
+      };
 
-            app.ports.getDim.subscribe(function (url) {
-                // recieve the url for the image through
-                // the `getDim` port in Main.elm
-                var img = new Image();
-                img.src = url;
-                img.onload = function () {
-                    // send the height and width back to elm through
-                    // the `newDim` port in Main.elm
-                    app.ports.newDim.send({ height: img.height, width: img.width });
-                };
-            });
+      window.addEventListener("resize", _this.resizeHandler);
 
-            app.ports.facesChanged.subscribe(function (_ref) {
-                var _ref2 = _slicedToArray(_ref, 2),
-                    faces = _ref2[0],
-                    selection = _ref2[1];
+      if (_this.props.faces !== undefined) {
+        faces = _this.props.faces;
+      }
+      if (_this.props.selection !== undefined) {
+        selection = _this.props.selection;
+      }
 
-                _this.props.facesDidUpdate && _this.props.facesDidUpdate(faces, selection);
-            });
-        };
+      var app = _Main2.default.Main.embed(_this.containerDiv, {
+        faces: faces,
+        selection: selection,
+        imgUrl: _this.props.imgUrl,
+        maxSize: maxSize
+      });
 
-        return _this;
-    }
+      _this.elmPorts = app.ports;
 
-    _createClass(_class, [{
-        key: 'render',
-        value: function render() {
-            return _react2.default.createElement('div', { ref: this.initialize, style: { width: "100%", height: "100%", textAlign: "left" } });
+      app.ports.getDim.subscribe(_this.handleGetDim);
+      app.ports.facesChanged.subscribe(_this.handleFacesChanged);
+    };
+
+    _this.handleGetDim = _this.handleGetDim.bind(_this);
+    _this.handleFacesChanged = _this.handleFacesChanged.bind(_this);
+    _this.resizeHandler = _this.resizeHandler.bind(_this);
+    return _this;
+  }
+
+  _createClass(_class, [{
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      return _react2.default.createElement("div", {
+        style: { width: "100%", height: "100%", textAlign: "left" },
+        ref: function ref(_ref3) {
+          _this2.containerDiv = _ref3;
         }
-    }]);
+      });
+    }
+  }]);
 
-    return _class;
+  return _class;
 }(_react2.default.Component);
 
 exports.default = _class;
